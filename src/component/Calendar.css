@@ -4,3 +4,18 @@ grid-template-columns: repeat(7, 1fr);
 max-width: 1024px;
 width: 100%;
 }
+
+.calendar__header {
+    display: flex;
+    justify-content: space-between
+}
+
+.header__content {
+    display: flex;
+}
+
+.today { 
+    border: 1px solid blue;
+    border-radius: 2px;
+    width: 21px;
+}
