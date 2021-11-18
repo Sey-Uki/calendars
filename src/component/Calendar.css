@@ -1,4 +1,21 @@
-.calendar{
+.overlay {
+    position: fixed;
+    left: 0;
+    top:0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.calendarComponent {
+    margin-top: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.calendar__body{
 display: grid;
 grid-template-columns: repeat(7, 1fr);
 max-width: 1024px;
