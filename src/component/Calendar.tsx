@@ -1,11 +1,14 @@
-import moment, { Moment, MomentFormatSpecification, MomentInput } from "moment";
-import React from "react";
+import moment, { Moment } from 'moment';
+import React from 'react';
 import './Calendar.css';
+import monImg from './../img/month.svg';
+import yearImg from './../img/year.svg';
 
 interface ICalendar {
     inputVal: string,
     today: string,
     days: Array<Moment>,
+    inputDay: string,
     inputMon: string,
     inputYear: string,
     startDate: Moment,
@@ -21,6 +24,7 @@ export class Calendar extends React.Component<{}, ICalendar> {
         days: [...Array(moment(moment().format('YYYY') + '-' + moment().format('MM') + '-' + 1).daysInMonth())].map((_, i) => {
             return moment(moment().format('YYYY') + '-' + moment().format('MM') + '-' + 1).clone().add(i, 'day')
         }),
+        inputDay: moment().format('D'),
         inputMon: moment().format('MM'),
         inputYear: moment().format('YYYY'),
         startDate: moment(moment().format('YYYY') + '-' + moment().format('MM') + '-' + 1),
@@ -31,17 +35,17 @@ export class Calendar extends React.Component<{}, ICalendar> {
 
 
     onInputChange = (e: any) => {
-        const regexp = /^(1[0-2])?(0[1-9])?.[0-9]{4}$/gm;
+        const regexp = /^(0[1-9])?(1[0-9])?(2[0-9])?(3[0-1])?.(1[0-2])?(0[1-9])?.[0-9]{4}$/gm;
 
         this.setState({ inputVal: e.target.value });
-        console.log(this.state.inputVal)
         if (regexp.test(e.target.value)) {
             const temp = e.target.value.split('.');
-            const startDate = moment(temp[1] + '-' + temp[0] + '-' + 1);
+            const startDate = moment(temp[2] + '-' + temp[1] + '-' + 1);
             this.setState({
                 startDate,
-                inputMon: temp[0],
-                inputYear: temp[1],
+                inputDay: temp[0],
+                inputMon: temp[1],
+                inputYear: temp[2],
                 days: [...Array(startDate.daysInMonth())].map((_, i) => {
                     return startDate.clone().add(i, 'day')
                 }),
@@ -138,10 +142,29 @@ export class Calendar extends React.Component<{}, ICalendar> {
         }
     }
 
+    onDay = (date: string) => {
+        const day = date.split('.')[0];
+        if (!day.split('')[1]) {
+            this.setState({
+                inputDay: 0 + day,
+                inputVal: 0 + date
+            })
+        } else {
+            this.setState({
+                inputDay: day,
+                inputVal: date
+            })
+        }
+    }
+
     onHideCalendar = () => {
         this.setState({
             showCalendar: false,
         })
+    }
+
+    componentDidMount() {
+        console.log(moment().format('HH:mm'))
     }
 
     render() {
@@ -158,62 +181,85 @@ export class Calendar extends React.Component<{}, ICalendar> {
             <>
                 {this.state.showCalendar && (
                     <div className="overlay" onClick={this.onHideCalendar}></div>
-                ) }
-                <div>
+                )}
+                <div className="content">
                     {
-                        !this.state.isInputvalid && <p className="error">Введите дату правильно - в формате ММ.ГГГГ</p>
+                        !this.state.isInputvalid && <p className="error">Введите дату правильно - в формате ДД.ММ.ГГГГ</p>
                     }
                     <div className="calendarComponent">
-                        <input
-                            value={this.state.inputVal}
-                            onChange={this.onInputChange}
-                            className="calendar__input"
-                            onFocus={() => this.setState({
-                                showCalendar: true,
-                            })}
-                        />
+                        <div className="calendar__input">
+                            <input
+                                value={this.state.inputVal}
+                                onChange={this.onInputChange}
+                                onFocus={() => this.setState({
+                                    showCalendar: true,
+                                })}
+                            />
+                        </div>
+
 
                         {this.state.showCalendar ?
-                            (<div className="calendar">
-                                <div className="calendar__header">
-                                    <button onClick={this.onPrevYear}>yP</button>
-                                    <button onClick={this.onPrevMon}>mP</button>
-                                    <div className="header__content">
-                                        <div className="header__mon">{this.state.inputMon}.</div>
-                                        <div className="header__yer">{this.state.inputYear}</div>
+                            (<>
+                                <div className="calendar">
+                                    <div className="calendar__header">
+                                        <button onClick={this.onPrevYear}>
+                                            <img src={yearImg} className="prev" alt="prev year" />
+                                        </button>
+                                        <button onClick={this.onPrevMon}>
+                                            <img src={monImg} className="prev" alt="prev month" />
+                                        </button>
+                                        <div className="header__content">
+                                            <div className="header__mon">{this.state.inputMon}.</div>
+                                            <div className="header__yer">{this.state.inputYear}</div>
+                                        </div>
+                                        <button onClick={this.onNextMon}>
+                                            <img src={monImg} className="next" alt="next month" />
+                                        </button>
+                                        <button onClick={this.onNextYear}>
+                                            <img src={yearImg} className="next" alt="next year" />
+                                        </button>
                                     </div>
-                                    <button onClick={this.onNextMon}>mN</button>
-                                    <button onClick={this.onNextYear}>yN</button>
-                                </div>
-                                <div className="calendar__body">
-                                    <div>Пн</div>
-                                    <div>Вт</div>
-                                    <div>Ср</div>
-                                    <div>Чт</div>
-                                    <div>Пт</div>
-                                    <div>Сб</div>
-                                    <div>Вс</div>
-                                    {daysNew.map((day: any) => {
-                                        if (typeof day === "object") {
-                                            if (day.format('D') === moment().format('D')
-                                                && this.state.inputMon === moment().format('MM')
-                                                && this.state.inputYear === moment().format('YYYY')) {
-                                                return (<p key={day.format('YYYY-D')} className="today">{
-                                                    day.format('D')
-                                                }</p>)
-                                            } else {
-                                                return (<p key={day.format('YYYY-D')}>{
-                                                    day.format('D')
-                                                }</p>)
-                                            }
+                                    <div className="calendar__body">
+                                        <div className="calendar__body__header">
+                                            <div>Пн</div>
+                                            <div>Вт</div>
+                                            <div>Ср</div>
+                                            <div>Чт</div>
+                                            <div>Пт</div>
+                                            <div>Сб</div>
+                                            <div>Вс</div>
+                                        </div>
+                                        <div className="calendar__body__content">
+                                            {daysNew.map((day: any) => {
+                                                if (typeof day === "object") {
+                                                    if (day.format('D') === moment().format('D')
+                                                        && this.state.inputMon === moment().format('MM')
+                                                        && this.state.inputYear === moment().format('YYYY')) {
+                                                        return (<p key={day.format('YYYY-D')} className="today calendar__day" onClick={() => this.onDay(day.format('D.MM.YYYY'))}>{
+                                                            <span>{day.format('D')}</span>
+                                                        }</p>)
+                                                    } else if (day.format('DD') === this.state.inputDay
+                                                        && (this.state.inputVal.split('.')[1] === this.state.inputMon
+                                                            && (this.state.inputVal.split('.')[2] === this.state.inputYear))) {
+                                                        return (<p key={day.format('YYYY-D')} className="picked calendar__day" onClick={() => this.onDay(day.format('D.MM.YYYY'))}>{
+                                                            <span>{day.format('D')}</span>
+                                                        }</p>)
+                                                    } else {
+                                                        return (<p key={day.format('YYYY-D')} className="calendar__day" onClick={() => this.onDay(day.format('D.MM.YYYY'))}>{
+                                                            <span>{day.format('D')}</span>
+                                                        }</p>)
+                                                    }
 
-                                        } else {
-                                            return (<p key={day}>{ }</p>)
-                                        }
-                                    }
-                                    )}
+                                                } else {
+                                                    return (<p key={day}>{ }</p>)
+                                                }
+                                            }
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>) : null
+                            </>
+                            ) : null
                         }
                     </div>
                 </div>
