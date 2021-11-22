@@ -17,6 +17,11 @@
     border: 1px solid rgb(230, 225, 225);
     border-radius: 5px;
     transition: opacity .2s;
+    width: 300px;
+}
+
+.calendarTwo {
+    display: flex;
 }
 
 .calendar__input {
@@ -46,10 +51,10 @@
 
 
 .calendarComponent {
-    width: 300px;
     margin-top: 20px;
     position: relative;
     z-index: 2;
+    width: 300px;
 }
 
 .calendar__body {
