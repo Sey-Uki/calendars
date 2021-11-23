@@ -1,17 +1,18 @@
-import moment, { Moment } from 'moment';
 import React from 'react';
 import './Calendar.css';
 import monImg from './../img/month.svg';
 import yearImg from './../img/year.svg';
 
+const { DateTime } = require("luxon");
+
 interface ICalendar {
     inputVal: string,
     today: string,
-    days: Array<Moment>,
+    days: any,
     inputDay: string,
     inputMon: string,
     inputYear: string,
-    startDate: Moment,
+    startDate: object,
     isInputvalid: boolean,
     showCalendar: boolean,
 };
@@ -20,14 +21,14 @@ interface ICalendar {
 export class Calendar extends React.Component<{}, ICalendar> {
     state: ICalendar = {
         inputVal: "",
-        today: moment().format('MM.YYYY'),
-        days: [...Array(moment(moment().format('YYYY') + '-' + moment().format('MM') + '-' + 1).daysInMonth())].map((_, i) => {
-            return moment(moment().format('YYYY') + '-' + moment().format('MM') + '-' + 1).clone().add(i, 'day')
+        today: DateTime.now().toFormat('MM.yyyy'),
+        days: [...Array(DateTime.local(Number(DateTime.now().toFormat('yyyy')), Number(DateTime.now().toFormat('MM')), 1).daysInMonth)].map((_, i) => {
+            return DateTime.local(Number(DateTime.now().toFormat('yyyy')), Number(DateTime.now().toFormat('MM')), Number(i) + 1)
         }),
-        inputDay: moment().format('D'),
-        inputMon: moment().format('MM'),
-        inputYear: moment().format('YYYY'),
-        startDate: moment(moment().format('YYYY') + '-' + moment().format('MM') + '-' + 1),
+        inputDay: DateTime.now().toFormat('d'),
+        inputMon: DateTime.now().toFormat('MM'),
+        inputYear: DateTime.now().toFormat('yyyy'),
+        startDate: DateTime.local(Number(DateTime.now().toFormat('yyyy')), Number(DateTime.now().toFormat('MM')), 1),
         isInputvalid: true,
         showCalendar: false,
     };
@@ -40,14 +41,14 @@ export class Calendar extends React.Component<{}, ICalendar> {
         this.setState({ inputVal: e.target.value });
         if (regexp.test(e.target.value)) {
             const temp = e.target.value.split('.');
-            const startDate = moment(temp[2] + '-' + temp[1] + '-' + 1);
+            const startDate = DateTime.local(Number(temp[2]), Number(temp[1]), 1);
             this.setState({
                 startDate,
                 inputDay: temp[0],
                 inputMon: temp[1],
                 inputYear: temp[2],
-                days: [...Array(startDate.daysInMonth())].map((_, i) => {
-                    return startDate.clone().add(i, 'day')
+                days: [...Array(startDate.daysInMonth)].map((_, i) => {
+                    return DateTime.local(Number(temp[2]), Number(temp[1]), Number(i) + 1)
                 }),
                 isInputvalid: true,
                 inputVal: e.target.value
@@ -62,12 +63,12 @@ export class Calendar extends React.Component<{}, ICalendar> {
 
     onPrevYear = () => {
         if (this.state.inputVal || this.state.today) {
-            const startDate = moment(String(Number(this.state.inputYear) - 1 + '-' + this.state.inputMon) + '-' + 1);
+            const startDate = DateTime.local(Number(this.state.inputYear) - 1, Number(this.state.inputMon), 1);
             this.setState({
                 startDate,
                 inputYear: String(Number(this.state.inputYear) - 1),
-                days: [...Array(startDate.daysInMonth())].map((_, i) => {
-                    return startDate.clone().add(i, 'day')
+                days: [...Array(startDate.daysInMonth)].map((_, i) => {
+                    return DateTime.local(Number(this.state.inputYear) - 1, Number(this.state.inputMon), Number(i) + 1)
                 }),
             })
         }
@@ -75,12 +76,12 @@ export class Calendar extends React.Component<{}, ICalendar> {
 
     onNextYear = () => {
         if (this.state.inputVal || this.state.today) {
-            const startDate = moment(String(Number(this.state.inputYear) + 1 + '-' + this.state.inputMon) + '-' + 1);
+            const startDate = DateTime.local(Number(this.state.inputYear) + 1, Number(this.state.inputMon), 1);
             this.setState({
                 startDate,
                 inputYear: String(Number(this.state.inputYear) + 1),
-                days: [...Array(startDate.daysInMonth())].map((_, i) => {
-                    return startDate.clone().add(i, 'day')
+                days: [...Array(startDate.daysInMonth)].map((_, i) => {
+                    return DateTime.local(Number(this.state.inputYear) + 1, Number(this.state.inputMon), Number(i) + 1)
                 }),
             })
         }
@@ -90,23 +91,23 @@ export class Calendar extends React.Component<{}, ICalendar> {
     onPrevMon = () => {
         if (this.state.inputVal || this.state.today) {
             if (+this.state.inputMon > 1) {
-                const startDate = moment(this.state.inputYear + '-' + String(Number(this.state.inputMon) - 1) + '-' + 1);
+                const startDate = DateTime.local(Number(this.state.inputYear), Number(this.state.inputMon) - 1, 1);
                 this.setState({
                     startDate,
                     inputMon: String(Number(this.state.inputMon) - 1),
-                    days: [...Array(startDate.daysInMonth())].map((_, i) => {
-                        return startDate.clone().add(i, 'day')
+                    days: [...Array(startDate.daysInMonth)].map((_, i) => {
+                        return (DateTime.local(Number(this.state.inputYear), Number(this.state.inputMon) - 1, Number(i) + 1))
                     }),
                 }
                 )
             } else if (+this.state.inputMon === 1) {
-                const startDate = moment(String(Number(this.state.inputYear) - 1) + '-' + 1 + '-' + 1);
+                const startDate = DateTime.local(Number(this.state.inputYear) - 1, 1, 1);
                 this.setState({
                     startDate,
                     inputMon: "12",
                     inputYear: String(Number(this.state.inputYear) - 1),
-                    days: [...Array(startDate.daysInMonth())].map((_, i) => {
-                        return startDate.clone().add(i, 'day')
+                    days: [...Array(startDate.daysInMonth)].map((_, i) => {
+                        return (DateTime.local(Number(this.state.inputYear) - 1, 1, Number(i) + 1))
                     }),
                 }
                 )
@@ -117,23 +118,23 @@ export class Calendar extends React.Component<{}, ICalendar> {
     onNextMon = () => {
         if (this.state.inputVal || this.state.today) {
             if (+this.state.inputMon < 12) {
-                const startDate = moment(this.state.inputYear + '-' + String(Number(this.state.inputMon) + 1) + '-' + 1);
+                const startDate = DateTime.local(Number(this.state.inputYear), Number(this.state.inputMon) + 1, 1);
                 this.setState({
                     startDate,
                     inputMon: String(Number(this.state.inputMon) + 1),
-                    days: [...Array(startDate.daysInMonth())].map((_, i) => {
-                        return startDate.clone().add(i, 'day')
+                    days: [...Array(startDate.daysInMonth)].map((_, i) => {
+                        return (DateTime.local(Number(this.state.inputYear), Number(this.state.inputMon) + 1, Number(i) + 1))
                     }),
                 }
                 )
             } else if (+this.state.inputMon === 12) {
-                const startDate = moment(String(Number(this.state.inputYear) + 1) + '-' + 1 + '-' + 1);
+                const startDate = DateTime.local((Number(this.state.inputYear) + 1), 1, 1);
                 this.setState({
                     startDate,
                     inputMon: "1",
                     inputYear: String(Number(this.state.inputYear) + 1),
-                    days: [...Array(startDate.daysInMonth())].map((_, i) => {
-                        return startDate.clone().add(i, 'day')
+                    days: [...Array(startDate.daysInMonth)].map((_, i) => {
+                        return DateTime.local((Number(this.state.inputYear) + 1), 1, Number(i) + 1)
                     }),
                 }
                 )
@@ -144,14 +145,17 @@ export class Calendar extends React.Component<{}, ICalendar> {
 
     onDay = (date: string) => {
         const day = date.split('.')[0];
+        const month = date.split('.')[1];
         if (!day.split('')[1]) {
             this.setState({
                 inputDay: 0 + day,
+                inputMon: month,
                 inputVal: 0 + date
             })
         } else {
             this.setState({
                 inputDay: day,
+                inputMon: month,
                 inputVal: date
             })
         }
@@ -164,7 +168,6 @@ export class Calendar extends React.Component<{}, ICalendar> {
     }
 
     componentDidMount() {
-        console.log(moment().format('HH:mm'))
     }
 
     render() {
@@ -172,7 +175,7 @@ export class Calendar extends React.Component<{}, ICalendar> {
         let daysNew;
         const newDays: any = [];
 
-        for (let i = 1; i < this.state.days[0].isoWeekday(); i++) {
+        for (let i = 1; i < this.state.days[0].weekday; i++) {
             newDays.push(i);
         }
         daysNew = newDays.concat(this.state.days);
@@ -196,7 +199,6 @@ export class Calendar extends React.Component<{}, ICalendar> {
                                 })}
                             />
                         </div>
-
 
                         {this.state.showCalendar ?
                             (<>
@@ -230,29 +232,30 @@ export class Calendar extends React.Component<{}, ICalendar> {
                                             <div>Вс</div>
                                         </div>
                                         <div className="calendar__body__content">
-                                            {daysNew.map((day: any) => {
-                                                if (typeof day === "object") {
-                                                    if (day.format('D') === moment().format('D')
-                                                        && this.state.inputMon === moment().format('MM')
-                                                        && this.state.inputYear === moment().format('YYYY')) {
-                                                        return (<p key={day.format('YYYY-D')} className="today calendar__day" onClick={() => this.onDay(day.format('D.MM.YYYY'))}>{
-                                                            <span>{day.format('D')}</span>
+                                            {daysNew.map((d: any) => {
+                                                if (typeof d === 'object') {
+                                                    if (d.day === +DateTime.now().toFormat('d')
+                                                        && this.state.inputMon === DateTime.now().toFormat('MM')
+                                                        && this.state.inputYear === DateTime.now().toFormat('yyyy')) {
+                                                        return (<p key={d} className="today calendar__day" onClick={() => this.onDay(d.toFormat('d.MM.yyyy'))}>{
+                                                            <span>{d.day}</span>
                                                         }</p>)
-                                                    } else if (day.format('DD') === this.state.inputDay
+                                                    } else if (d.day === +this.state.inputDay
                                                         && (this.state.inputVal.split('.')[1] === this.state.inputMon
                                                             && (this.state.inputVal.split('.')[2] === this.state.inputYear))) {
-                                                        return (<p key={day.format('YYYY-D')} className="picked calendar__day" onClick={() => this.onDay(day.format('D.MM.YYYY'))}>{
-                                                            <span>{day.format('D')}</span>
+                                                        return (<p key={d} className="picked calendar__day" onClick={() => this.onDay(d.toFormat('d.MM.yyyy'))}>{
+                                                            <span>{d.day}</span>
                                                         }</p>)
                                                     } else {
-                                                        return (<p key={day.format('YYYY-D')} className="calendar__day" onClick={() => this.onDay(day.format('D.MM.YYYY'))}>{
-                                                            <span>{day.format('D')}</span>
+                                                        return (<p key={d} className="calendar__day" onClick={() => this.onDay(d.toFormat('d.MM.yyyy'))}>{
+                                                            <span>{d.day}</span>
                                                         }</p>)
                                                     }
-
-                                                } else {
-                                                    return (<p key={day}>{ }</p>)
-                                                }
+                                                } else return (
+                                                    <p key={d}>
+                                                        { }
+                                                    </p>
+                                                )
                                             }
                                             )}
                                         </div>
