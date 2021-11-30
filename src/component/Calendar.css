@@ -46,14 +46,18 @@
 
 
 .calendarComponent {
-    width: 300px;
+    /* width: 300px; */
     margin-top: 20px;
     position: relative;
     z-index: 2;
 }
 
 .calendar__body {
-    max-width: 1024px;
+    width: 350px;
+}
+
+.calendar__body:nth-child(1){
+    border-right: 1px solid #d9d9d9;
 }
 
 .calendar__body > div {
@@ -138,4 +142,35 @@
 .calendar__day:hover{
     cursor: pointer;
     background-color: rgb(230, 225, 225);
+}
+
+.calendar__footer {
+    border-top: 1px solid #f0f0f0;
+    width: min-content;
+    min-width: 100%;
+    line-height: 38px;
+    text-align: center;
+}
+
+.calendar__today {
+    outline: none; 
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: crimson;
+    font-size: 15px;
+}
+
+.calendar__today:hover {
+    color: rgb(143, 16, 41);
+}
+
+.calendar__another {
+    color: #00000040;
+    display: flex;
+    align-items: center;
+}
+
+.calendar__wrapper{
+    display: flex;
 }
