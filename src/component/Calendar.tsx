@@ -9,6 +9,7 @@ const { DateTime } = require("luxon");
 interface ICalendar {
     inputVal: string,
     today: string,
+    calendarCount: number,
 
     days: any,
     inputDay: string,
@@ -28,6 +29,7 @@ interface ICalendar {
 
 export class Calendar extends React.Component<{}, ICalendar> {
     state: ICalendar = {
+        calendarCount: 1,
         inputVal: "",
         today: DateTime.now().toFormat('dd.MM.yyyy'),
 
@@ -284,7 +286,7 @@ export class Calendar extends React.Component<{}, ICalendar> {
 
     render() {
 
-        let daysNew;
+        let daysNew: any;
         const firstDays: any = [];
         const lastDays: any = [];
         let prevMonDays;
@@ -326,10 +328,6 @@ export class Calendar extends React.Component<{}, ICalendar> {
             nextDaysNew = nextDaysNew.concat(nextLastDays)
         }
 
-        console.log(this.state.nextDays)
-
-
-
         return (
             <>
                 {this.state.showCalendar && (
@@ -352,6 +350,11 @@ export class Calendar extends React.Component<{}, ICalendar> {
 
                         {this.state.showCalendar ?
                             (<>
+                                <button onClick={() => {
+                                    this.setState((state) => ({
+                                        calendarCount: state.calendarCount + 1
+                                    }))
+                                }}>Click</button>
                                 <div className="calendar">
                                     <div className="calendar__header">
                                         <button onClick={this.onPrevYear}>
@@ -363,9 +366,9 @@ export class Calendar extends React.Component<{}, ICalendar> {
                                         <div className="header__content">
                                             <div className="header__mon">{this.state.inputMon}.</div>
                                             <div className="header__yer">{this.state.inputYear}</div>
-                                            -
-                                            <div className="header__mon">{this.state.nextMon}.</div>
-                                            <div className="header__yer">{this.state.nextYear}</div>
+                                            {/* -
+                                                <div className="header__mon">{this.state.nextMon}.</div>
+                                                <div className="header__yer">{this.state.nextYear}</div> */}
                                         </div>
                                         <button onClick={this.onNextMon}>
                                             <img src={monImg} className="next" alt="next month" />
@@ -414,15 +417,24 @@ export class Calendar extends React.Component<{}, ICalendar> {
                                                 )}
                                             </div>
                                         </div> */}
-                                        <CalendarBody
-                                            daysNew={daysNew}
-                                            inputDay={this.state.inputDay}
-                                            inputMon={this.state.inputMon}
-                                            inputYear={this.state.inputYear}
-                                            onDay={this.onDay}
-                                            inputVal={this.state.inputVal}
-                                        />
-                                        <div className="calendar__body">
+                                        {
+                                            [...Array(this.state.calendarCount).keys()].map(item => {
+                                                return (
+                                                    <CalendarBody
+                                                        key={item + 1}
+                                                        calendarCount={item - 1}
+                                                        inputDay={this.state.inputDay}
+                                                        inputMon={this.state.inputMon}
+                                                        inputYear={this.state.inputYear}
+                                                        onDay={this.onDay}
+                                                        inputVal={this.state.inputVal}
+                                                        daysNew={daysNew}
+                                                    />
+                                                )
+                                            })
+                                        }
+
+                                        {/* <div className="calendar__body">
                                             <div className="calendar__body__header">
                                                 <div>Пн</div>
                                                 <div>Вт</div>
@@ -446,7 +458,7 @@ export class Calendar extends React.Component<{}, ICalendar> {
                                                 }
                                                 )}
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                     <div className="calendar__footer">
                                         <button className="calendar__today" onClick={() => this.onToday()}>Текущий день</button>
