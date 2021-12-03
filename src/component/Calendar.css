@@ -56,11 +56,11 @@
     width: 350px;
 }
 
-.calendar__body:nth-child(1){
-    border-right: 1px solid #d9d9d9;
+.calendar__body{
+    border: 1px solid #d9d9d9;
 }
 
-.calendar__body > div {
+.calendar__body__header, .calendar__body__content {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     width: 100%;
@@ -109,6 +109,9 @@
 
 .header__content {
     display: flex;
+    justify-content: center;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0;
 }
 
 .today { 

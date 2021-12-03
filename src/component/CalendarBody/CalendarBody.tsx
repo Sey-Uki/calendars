@@ -3,64 +3,46 @@ import { week } from "../../assets/shared/projectData";
 
 interface ICalendarProps {
     inputVal: string,
-    inputDay: string,
-    inputMon: string,
-    inputYear: string,
+    day: string,
+    month: string,
+    year: string,
     onDay: Function,
     calendarCount: number,
-    daysNew: Array<number>,
-    nextMonthNumber: number,
 };
-
-interface ICalendarState {
-    myDays: Array<number>
-}
 
 const { DateTime } = require("luxon");
 
-export class CalendarBody extends React.Component<ICalendarProps, ICalendarState>  {
-
-    constructor(props: ICalendarProps) {
-    super(props);
-    this.state = {
-        myDays: [...this.props.daysNew],
-    };
-    }
+export class CalendarBody extends React.Component<ICalendarProps, {}>  {
 
     render() {
 
-        const { inputVal, inputDay, inputMon, inputYear, onDay, nextMonthNumber } = this.props;
+        const { inputVal, day, month, year, onDay, calendarCount } = this.props;
+        let monthNew: string;
+        let yearNew: string;
 
-        let days = [];
 
-        if (nextMonthNumber < 12) {
-            const startDate = DateTime.local(Number(inputYear), Number(inputMon) + 1, 1);
-
-            days = [...Array(startDate.daysInMonth)].map((_, i) => {
-                return (DateTime.local(Number(inputYear), Number(inputMon) + 1, Number(i) + 1))
-            })
-
-        } else if (nextMonthNumber === 12) {
-            const startDate = DateTime.local((Number(inputYear)), Number(inputMon), 1);
-            days = [...Array(startDate.daysInMonth)].map((_, i) => {
-                return (DateTime.local(Number(inputYear), Number(inputMon), Number(i) + 1))
-            })
+        if (+month >= 13) {
+            monthNew = String(calendarCount);
+            yearNew = String(+year + 1);
+        } else {
+            monthNew = month;
+            yearNew = year;
         }
-        else if (nextMonthNumber > 12) {
-            days = [...Array(DateTime.local(Number(DateTime.now().toFormat('yyyy'))+1, 1, 1).daysInMonth)].map((_, i) => {
-                return DateTime.local(Number(DateTime.now().toFormat('yyyy'))+1, 1, Number(i) + 1)
-            });
-        }
+
+        const startDate = DateTime.local((Number(yearNew)), Number(monthNew), 1);
+        let days = [...Array(startDate.daysInMonth)].map((_, i) => {
+            return (DateTime.local(Number(yearNew), Number(monthNew), Number(i) + 1))
+        });
 
         let daysNew: Array<number>;
         const firstDays: Array<number> = [];
         const lastDays: Array<number> = [];
         let prevMonDays;
 
-        if (+inputMon === 1) {
-            prevMonDays = DateTime.local(Number(inputYear) + 1, 1, 1).daysInMonth;
+        if (+monthNew === 1) {
+            prevMonDays = DateTime.local(Number(yearNew) + 1, 1, 1).daysInMonth;
         } else {
-            prevMonDays = DateTime.local(Number(inputYear), Number(inputMon) - 1, 1).daysInMonth;
+            prevMonDays = DateTime.local(Number(yearNew), Number(monthNew) - 1, 1).daysInMonth;
         }
 
         for (let i = days[0].weekday - 2; i >= 0; i--) {
@@ -77,32 +59,35 @@ export class CalendarBody extends React.Component<ICalendarProps, ICalendarState
 
         return (
             <div className="calendar__body">
+                <div className="header__content">
+                    <div className="header__mon">{monthNew}.</div>
+                    <div className="header__yer">{yearNew}</div>
+                </div>
                 <div className="calendar__body__header">
                     {
                         week.map((w) => {
-                            return  <div>{w.dayName}</div>
+                            return <div key={w.id}>{w.dayName}</div>
                         })
                     }
                 </div>
                 <div className="calendar__body__content">
                     {daysNew.map((d: number | any) => {
-                       
-                        if (typeof d === 'object') {
-                            if (d.day === +inputDay
 
-                                && (inputVal.split('.')[1] === inputMon
-                                    && (inputVal.split('.')[2] === inputYear))) {
-                                return (<p key={d} className="picked calendar__day" onClick={() => onDay(d.toFormat('d.MM.yyyy'))}>{
+                        if (typeof d === 'object') {
+                            if (d.day === +day
+                                && (inputVal.split('.')[1] === monthNew)
+                                && (inputVal.split('.')[2] === yearNew)) {
+                                return (<p key={d} className="picked calendar__day" onClick={() => onDay(d.toFormat('d.M.yyyy'))}>{
                                     <span>{d.day}</span>
                                 }</p>)
                             } else if (d.day === +DateTime.now().toFormat('d')
-                                && inputMon === DateTime.now().toFormat('MM')
-                                && inputYear === DateTime.now().toFormat('yyyy')) {
-                                return (<p key={d} className="today calendar__day" onClick={() => onDay(d.toFormat('d.MM.yyyy'))}>{
+                                && monthNew === DateTime.now().toFormat('MM')
+                                && year === DateTime.now().toFormat('yyyy')) {
+                                return (<p key={d} className="today calendar__day" onClick={() => onDay(d.toFormat('d.M.yyyy'))}>{
                                     <span>{d.day}</span>
                                 }</p>)
                             } else {
-                                return (<p key={d} className="calendar__day" onClick={() => onDay(d.toFormat('d.MM.yyyy'))}>{
+                                return (<p key={d} className="calendar__day" onClick={() => onDay(d.toFormat('d.M.yyyy'))}>{
                                     <span>{d.day}</span>
                                 }</p>)
                             }
