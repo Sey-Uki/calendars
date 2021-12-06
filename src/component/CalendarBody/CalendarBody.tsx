@@ -6,7 +6,7 @@ interface ICalendarProps {
     day: string, // выбранный день
     month: string, // месяц
     year: string, // год
-    onDay: Function, // функция, которая принирмаю в себя дату выбранного числа
+    onDay: Function, // функция, которая принимает в себя дату выбранного числа
     calendarCount: number, // счетчик календарей
 };
 
