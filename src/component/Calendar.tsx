@@ -174,7 +174,7 @@ export class Calendar extends React.Component<{}, ICalendarState> {
                             this.setState({
                                 calendarCount: this.state.calendarCount + 1,
                             })
-                        }}>Click</button>
+                        }} className="button__click">Click</button>
                         <div className="calendar">
                             <div className="calendar__header">
                                 <button onClick={this.onPrevYear}>

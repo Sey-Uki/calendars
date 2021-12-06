@@ -54,6 +54,28 @@
 
 .calendar__body {
     width: 350px;
+    background-color: #ffffff;
+}
+
+.calendar__body:first-child{
+    z-index: 2;
+}
+
+.calendar__body:not(:first-child) {
+    overflow: hidden;
+    animation: 1.5s ease 0s calendar;
+    z-index: 2;
+}
+
+@keyframes calendar {
+    0% {
+        margin-left: -350px;
+        z-index: 1;
+    }
+    100% {
+        margin-left: 0px;
+        z-index: 1;
+    }
 }
 
 .calendar__body{

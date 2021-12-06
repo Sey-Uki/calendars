@@ -2,12 +2,12 @@ import React from "react";
 import { week } from "../../assets/shared/projectData";
 
 interface ICalendarProps {
-    inputVal: string,
-    day: string,
-    month: string,
-    year: string,
-    onDay: Function,
-    calendarCount: number,
+    inputVal: string, // хранится выбраная дата, здесь необходим, чтоб навесить стили на выбранную дату 
+    day: string, // выбранный день
+    month: string, // месяц
+    year: string, // год
+    onDay: Function, // функция, которая принирмаю в себя дату выбранного числа
+    calendarCount: number, // счетчик календарей
 };
 
 const { DateTime } = require("luxon");
@@ -58,7 +58,7 @@ export class CalendarBody extends React.Component<ICalendarProps, {}>  {
         }
 
         return (
-            <div className="calendar__body">
+            <div className="calendar__body" style={{marginTop: calendarCount*50 + "px"}}>
                 <div className="header__content">
                     <div className="header__mon">{monthNew}.</div>
                     <div className="header__yer">{yearNew}</div>
