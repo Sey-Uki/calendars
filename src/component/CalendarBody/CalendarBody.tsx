@@ -8,11 +8,17 @@ interface ICalendarProps {
     year: string, // год
     onDay: Function, // функция, которая принимает в себя дату выбранного числа
     calendarCount: number, // счетчик календарей
+    position: Function, // функция вычисляет текущую позицию
+    activeCalendarPos: number, // позиция выбранного календаря
 };
 
 const { DateTime } = require("luxon");
 
 export class CalendarBody extends React.Component<ICalendarProps, {}>  {
+
+    onPosition = () => {
+        this.props.position();
+    }
 
     render() {
 
@@ -20,13 +26,17 @@ export class CalendarBody extends React.Component<ICalendarProps, {}>  {
         let monthNew: string;
         let yearNew: string;
 
+        let longMonth;
+
 
         if (+month >= 13) {
             monthNew = String(calendarCount);
             yearNew = String(+year + 1);
+            longMonth = DateTime.fromISO('2021-0' + monthNew + '-06').setLocale('ru').toFormat('LLLL');
         } else {
-            monthNew = month;
+            monthNew = +month < 10 ? "0" + month : month;
             yearNew = year;
+            longMonth = DateTime.fromISO('2021-' + monthNew + '-06').setLocale('ru').toFormat('LLLL');
         }
 
         const startDate = DateTime.local((Number(yearNew)), Number(monthNew), 1);
@@ -50,17 +60,23 @@ export class CalendarBody extends React.Component<ICalendarProps, {}>  {
         }
         daysNew = firstDays.concat(days);
 
-        if (days[days.length - 1].weekday < 7) {
-            for (let i = 1; i <= 7 - days[days.length - 1].weekday; i++) {
+        if (days[days.length - 1].weekday < 21) {
+            for (let i = 1; i <= 21 - days[days.length - 1].weekday; i++) {
                 lastDays.push(i)
             }
             daysNew = daysNew.concat(lastDays)
         }
 
+        const className = this.props.activeCalendarPos === this.props.calendarCount ? "calendar__body calendar_active" : "calendar__body";
+
+        // const styles = {marginTop: (calendarCount+1) * 50 + "px"};
+        const styles = { marginTop: 50 + "px" };
+        const activStyles = { marginTop: 0 + "px" };
+
         return (
-            <div className="calendar__body" style={{marginTop: calendarCount*50 + "px"}}>
+            <div className={className} style={this.props.activeCalendarPos === this.props.calendarCount ? activStyles : styles} onClick={() => this.onPosition()}>
                 <div className="header__content">
-                    <div className="header__mon">{monthNew}.</div>
+                    <div className="header__mon">{longMonth.charAt(0).toUpperCase()+longMonth.slice(1)}</div>
                     <div className="header__yer">{yearNew}</div>
                 </div>
                 <div className="calendar__body__header">

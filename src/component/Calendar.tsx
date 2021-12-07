@@ -6,7 +6,7 @@ import { CalendarBody } from './CalendarBody/CalendarBody';
 
 const { DateTime } = require("luxon");
 
-interface ICalendarState { 
+interface ICalendarState {
     day: string,
     month: string,
     year: string,
@@ -20,6 +20,8 @@ interface ICalendarState {
 
     isInputvalid: boolean,
     showCalendar: boolean,
+
+    activeCalendarPos: number,
 };
 
 
@@ -42,6 +44,8 @@ export class Calendar extends React.Component<{}, ICalendarState> {
 
             isInputvalid: true,
             showCalendar: true,
+
+            activeCalendarPos: 0,
         };
     }
 
@@ -156,7 +160,10 @@ export class Calendar extends React.Component<{}, ICalendarState> {
         })
     }
 
-    componentDidMount() {
+    position = (pos: number) => {
+        this.setState({
+            activeCalendarPos: pos,
+        })
     }
 
     render() {
@@ -167,7 +174,7 @@ export class Calendar extends React.Component<{}, ICalendarState> {
                         <div className="calendar__input">
                             <input
                                 value={this.state.inputVal}
-                                onChange={() => {}}
+                                onChange={() => { }}
                             />
                         </div>
                         <button onClick={() => {
@@ -177,22 +184,25 @@ export class Calendar extends React.Component<{}, ICalendarState> {
                         }} className="button__click">Click</button>
                         <div className="calendar">
                             <div className="calendar__header">
-                                <button onClick={this.onPrevYear}>
+                                <button onClick={this.onPrevYear} className="calendar__header_btn">
                                     <img src={yearImg} className="prev" alt="prev year" />
                                 </button>
-                                <button onClick={this.onPrevMon}>
+                                <button onClick={this.onPrevMon} className="calendar__header_btn">
                                     <img src={monImg} className="prev" alt="prev month" />
                                 </button>
-                                <button onClick={this.onNextMon}>
+                                
+                                    <button className="calendar__today" onClick={() => this.onToday()}>Текущий день</button>
+                                
+                                <button onClick={this.onNextMon} className="calendar__header_btn">
                                     <img src={monImg} className="next" alt="next month" />
                                 </button>
-                                <button onClick={this.onNextYear}>
+                                <button onClick={this.onNextYear} className="calendar__header_btn">
                                     <img src={yearImg} className="next" alt="next year" />
                                 </button>
                             </div>
                             <div className="calendar__wrapper">
                                 {
-                                    [...Array(this.state.calendarCount).keys()].map(item => {
+                                    [...Array(this.state.calendarCount).keys()].map((item, pos) => {
                                         return (
                                             <CalendarBody
                                                 key={item + 1}
@@ -202,13 +212,12 @@ export class Calendar extends React.Component<{}, ICalendarState> {
                                                 year={this.state.year}
                                                 onDay={this.onDay}
                                                 inputVal={this.state.inputVal}
+                                                position={() => this.position(pos)}
+                                                activeCalendarPos={this.state.activeCalendarPos}
                                             />
                                         )
                                     })
                                 }
-                            </div>
-                            <div className="calendar__footer">
-                                <button className="calendar__today" onClick={() => this.onToday()}>Текущий день</button>
                             </div>
                         </div>
                     </div>
